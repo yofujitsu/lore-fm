@@ -1,0 +1,16 @@
+{
+  "albums": {
+    "items": [
+      {
+        "id": "123", "name": "Cold Visions", "album_type": "album", "release_date": "2024-04-23",
+        "artists": [{"name": "Bladee"}, {"name": "Yung Lean"}],
+        "images": [{"url": "https://i.scdn.co/image/small", "width": 64, "height": 64}, {"url": "https://i.scdn.co/image/large", "width": 640, "height": 640}],
+        "external_urls": {"spotify": "https://open.spotify.com/album/123"}, "ignored_future_field": true
+      },
+      {"id": "456", "name": "Écho & Æ", "album_type": "future-type", "release_date": "invalid", "artists": [{"name": "Björk"}], "images": [], "external_urls": {"spotify": "https://open.spotify.com/album/456"}},
+      {"id": "789", "name": "Single", "album_type": "single", "release_date": "1999", "artists": [{"name": "Artist"}]},
+      {"id": "mix", "name": "Collection", "album_type": "compilation", "release_date": "2005-10", "artists": [{"name": "Artist"}]},
+      {"id": "broken", "name": "", "artists": []}
+    ]
+  }
+}
