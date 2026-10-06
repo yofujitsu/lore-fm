@@ -28,6 +28,7 @@ public class SpotifyProvider implements ReleaseProvider {
     }
 
     @Override public Provider provider() { return Provider.SPOTIFY; }
+    @Override public boolean enabled() { return properties.available(); }
 
     @Override public List<ProviderRelease> search(ReleaseSearchQuery query) {
         if (!properties.available()) return List.of();

@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface ReleaseProvider {
     Provider provider();
+    default boolean enabled() { return true; }
     List<ProviderRelease> search(ReleaseSearchQuery query);
 }

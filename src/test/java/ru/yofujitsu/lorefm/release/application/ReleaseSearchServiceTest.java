@@ -27,11 +27,11 @@ class ReleaseSearchServiceTest {
     void isolatesFailureAndHonorsProviderFilter() {
         var good = provider(Provider.SPOTIFY, q -> List.of(new ProviderRelease(release())));
         var bad = provider(Provider.MUSICBRAINZ, q -> { throw new IllegalStateException("private-provider-secret"); });
-        var service = new ReleaseSearchService(List.of(bad, good), Duration.ofMinutes(15), 1000);
-        assertThat(service.search(new ReleaseSearchQuery("Cold Visions", 10, Set.of()))).containsExactly(release());
-        assertThat(service.search(new ReleaseSearchQuery("Cold Visions", 10, Set.of(Provider.MUSICBRAINZ)))).isEmpty();
-        assertThat(new ReleaseSearchService(List.of(), Duration.ofMinutes(15), 1000)
-                .search(new ReleaseSearchQuery("test", 10, Set.of()))).isEmpty();
+        var service = new ReleaseSearchService(List.of(bad, good), Duration.ofMinutes(15), 1000, Duration.ofSeconds(2), Duration.ofSeconds(30));
+        assertThat(service.search(new ReleaseSearchQuery("Cold Visions", 10, Set.of())).results()).containsExactly(release());
+        assertThat(service.search(new ReleaseSearchQuery("Cold Visions", 10, Set.of(Provider.MUSICBRAINZ))).results()).isEmpty();
+        assertThat(new ReleaseSearchService(List.of(), Duration.ofMinutes(15), 1000, Duration.ofSeconds(2), Duration.ofSeconds(30))
+                .search(new ReleaseSearchQuery("test", 10, Set.of())).results()).isEmpty();
     }
 
     @Test
@@ -41,11 +41,11 @@ class ReleaseSearchServiceTest {
             if (calls.incrementAndGet() == 1) throw new IllegalStateException("failure");
             return List.of(new ProviderRelease(release()));
         });
-        var service = new ReleaseSearchService(List.of(source), Duration.ofMinutes(15), 1000);
+        var service = new ReleaseSearchService(List.of(source), Duration.ofMinutes(15), 1000, Duration.ofSeconds(2), Duration.ofSeconds(30));
         var query = new ReleaseSearchQuery("Cold Visions", 10, Set.of());
-        assertThat(service.search(query)).isEmpty();
-        assertThat(service.search(query)).containsExactly(release());
-        assertThat(service.search(query)).containsExactly(release());
+        assertThat(service.search(query).results()).isEmpty();
+        assertThat(service.search(query).results()).containsExactly(release());
+        assertThat(service.search(query).results()).containsExactly(release());
         assertThat(calls.get()).isEqualTo(2);
         service.search(new ReleaseSearchQuery("Bladee", 10, Set.of()));
         service.search(new ReleaseSearchQuery("Cold Visions", 20, Set.of()));

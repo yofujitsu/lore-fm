@@ -3,6 +3,7 @@ package ru.yofujitsu.lorefm.provider.spotify;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
+import ru.yofujitsu.lorefm.release.application.ProviderUnavailableException;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -28,12 +29,14 @@ final class SpotifyHttp {
         factory.setReadTimeout(Duration.ofNanos(remaining(deadline)));
         return RestClient.builder().requestFactory(factory)
                 .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {
-                    throw new Failure(response.getStatusCode().value());
+                    int status = response.getStatusCode().value();
+                    throw new Failure(status, status == 429 || status == 503
+                            ? ProviderUnavailableException.retryAfter(response.getHeaders().getFirst("Retry-After")) : null);
                 }).build();
     }
 
-    static final class Failure extends RuntimeException {
+    static final class Failure extends ProviderUnavailableException {
         final int status;
-        Failure(int status) { super("Spotify request failed (HTTP " + status + ")"); this.status = status; }
+        Failure(int status, Duration retryAfter) { super(retryAfter); this.status = status; }
     }
 }

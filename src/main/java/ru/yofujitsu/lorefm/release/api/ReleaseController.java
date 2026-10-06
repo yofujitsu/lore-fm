@@ -32,6 +32,7 @@ public class ReleaseController {
             }
         }
         var query = new ReleaseSearchQuery(q, parsedLimit, selected);
-        return new SearchResponse(query.query(), service.search(query));
+        var found = service.search(query);
+        return new SearchResponse(query.query(), found.results(), found.partial(), found.unavailable());
     }
 }

@@ -14,6 +14,22 @@ import static org.assertj.core.api.Assertions.*;
 
 class SpotifyProviderTest {
     @Test
+    void forwardsRetryAfterWithoutExposingProviderBody() throws Exception {
+        try (var server = new SpotifyMockServer()) {
+            server.server.createContext("/api/token", e -> SpotifyMockServer.json(e, 200, "{\"access_token\":\"test-token\",\"expires_in\":3600}"));
+            server.server.createContext("/v1/search", e -> {
+                e.getResponseHeaders().set("Retry-After", "12");
+                SpotifyMockServer.json(e, 429, "{\"error\":\"private-provider-secret\"}");
+            });
+            var p = server.properties();
+            assertThatThrownBy(() -> new SpotifyProvider(p, new SpotifyTokenClient(p)).search(new ReleaseSearchQuery("test", 10, Set.of())))
+                    .isInstanceOf(ru.yofujitsu.lorefm.release.application.ProviderUnavailableException.class)
+                    .satisfies(ex -> assertThat(((ru.yofujitsu.lorefm.release.application.ProviderUnavailableException) ex).retryAfter()).isEqualTo(Duration.ofSeconds(12)))
+                    .hasMessageNotContaining("private-provider-secret");
+        }
+    }
+
+    @Test
     void unauthorizedSearchRefreshesTokenOnNextAttempt() throws Exception {
         try (var server = new SpotifyMockServer()) {
             var tokenCalls = new AtomicInteger();

@@ -28,11 +28,12 @@ class ReleaseControllerTest {
                 calls.incrementAndGet();
                 requestedLimit = q.limit();
                 if (q.query().equals("fail")) throw new IllegalStateException("private-provider-secret");
+                if (q.query().equals("empty")) return List.of();
                 return List.of(new ProviderRelease(new Release(new ReleaseId("spotify:123"), "Cold Visions",
                         List.of(new Artist("Bladee")), 2024, ReleaseType.ALBUM, null, List.of())));
             }
         };
-        mvc = MockMvcBuilders.standaloneSetup(new ReleaseController(new ReleaseSearchService(List.of(source), Duration.ofMinutes(15), 1000)))
+        mvc = MockMvcBuilders.standaloneSetup(new ReleaseController(new ReleaseSearchService(List.of(source), Duration.ofMinutes(15), 1000, Duration.ofSeconds(2), Duration.ofSeconds(30))))
                 .setControllerAdvice(new ApiExceptionHandler()).build();
     }
 
@@ -73,6 +74,16 @@ class ReleaseControllerTest {
         assertThat(requestedLimit).isEqualTo(10);
         mvc.perform(get("/api/v1/releases/search").param("q", "ab").param("limit", "20")).andExpect(status().isOk());
         assertThat(requestedLimit).isEqualTo(20);
+    }
+
+    @Test
+    void exposesAvailabilityWithoutMistakingHealthyEmptyResultsForFailure() throws Exception {
+        mvc.perform(get("/api/v1/releases/search").param("q", "empty"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.results").isEmpty())
+                .andExpect(jsonPath("$.partial").value(false)).andExpect(jsonPath("$.unavailable").value(false));
+        mvc.perform(get("/api/v1/releases/search").param("q", "fail"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.partial").value(false))
+                .andExpect(jsonPath("$.unavailable").value(true));
     }
 
     @Test
