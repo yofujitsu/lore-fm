@@ -11,5 +11,5 @@ public class MusicBrainzProperties {
     private boolean enabled = true;
     private Duration requestTimeout = Duration.ofMillis(1200);
     private String apiBaseUrl = "https://musicbrainz.org/ws/2";
-    private String userAgent = "Ninefold/0.1 (mailto:yofujitsuuu@gmail.com)";
+    private String userAgent = "Ninefold/1.0.0 (mailto:yofujitsuuu@gmail.com)";
 }

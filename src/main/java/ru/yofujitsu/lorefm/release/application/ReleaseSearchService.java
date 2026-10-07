@@ -46,7 +46,9 @@ public class ReleaseSearchService implements AutoCloseable {
     public SearchResult search(ReleaseSearchQuery query) {
         long deadline = System.nanoTime() + timeout.toNanos();
         var active = providers.stream().filter(ReleaseProvider::enabled)
-                .filter(p -> query.providers().isEmpty() || query.providers().contains(p.provider())).toList();
+                .filter(p -> query.providers().isEmpty()
+                        ? p.provider() == Provider.SPOTIFY || p.provider() == Provider.MUSICBRAINZ
+                        : query.providers().contains(p.provider())).toList();
         var tasks = active.stream().map(p -> executor.submit(() -> cached(p, query))).toList();
         var found = new ArrayList<ProviderRelease>();
         int successes = 0;

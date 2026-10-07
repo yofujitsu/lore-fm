@@ -9,6 +9,7 @@ FROM eclipse-temurin:21-jre-alpine
 RUN addgroup -S ninefold && adduser -S -G ninefold ninefold
 WORKDIR /app
 COPY --from=build /build/target/lore-fm-*.jar app.jar
+COPY LICENSE THIRD_PARTY_NOTICES.md /usr/share/doc/ninefold/
 USER ninefold
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
