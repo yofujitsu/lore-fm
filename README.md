@@ -1,5 +1,8 @@
 # ninefold
 
+<img width="1933" height="1262" alt="image" src="https://github.com/user-attachments/assets/080ac741-9ed6-4767-be86-35025284bbdb" />
+
+
 **1.0.0** · [Open Ninefold](https://ninefold.duckdns.org/) · [Changelog](CHANGELOG.md) · [Frontend repository](https://github.com/yofujitsu/lore-fm-frontend)
 
 Pick your top 9 music releases. Albums, EPs, singles. Make a board for a genre, a mood or that very specific era of your life. Send it to your friends and steal a few good recs from theirs.
