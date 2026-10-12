@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Fit the desktop release grid to the window height, move board details beside it and give Saved boards their own tab.
+- Put the icon-only theme switch and made by fj credit in the header.
+- Remove headline playback controls and bring lore, eras and music nerds into the editor copy.
+
 ## 1.0.0 — 2026-10-07
 
 First stable Ninefold release. Pick nine music releases, make a board for your mood or era, share it with friends.
